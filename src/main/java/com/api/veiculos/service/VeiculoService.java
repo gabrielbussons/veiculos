@@ -1,5 +1,6 @@
 package com.api.veiculos.service;
 
+import com.api.veiculos.exception.PlacaDuplicadaException;
 import com.api.veiculos.infrastructure.dto.RelatorioMarcaDTO;
 import com.api.veiculos.infrastructure.entity.Veiculo;
 import com.api.veiculos.infrastructure.repository.VeiculoRepository;
@@ -101,7 +102,7 @@ public class VeiculoService {
         var existente = repository.findByPlaca(placa);
 
         if (existente.isPresent() && !existente.get().getId().equals(idAtual)) {
-            throw new RuntimeException("Já existe um veículo cadastrado com esta placa");
+            throw new PlacaDuplicadaException("Já existe um veículo cadastrado com esta placa");
         }
     }
 

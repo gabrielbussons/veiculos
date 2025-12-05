@@ -36,16 +36,12 @@ public class AutenticacaoController {
             }
     )
     public ResponseEntity<TokenDTO> login(@RequestBody LoginDTO dto) {
-        try {
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getSenha());
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getSenha());
 
-            authManager.authenticate(authToken);
+        authManager.authenticate(authToken);
 
-            String token = jwtService.gerarToken(dto.getUsername());
-            return ResponseEntity.ok(new TokenDTO(token));
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body(null);
-        }
+        String token = jwtService.gerarToken(dto.getUsername());
+        return ResponseEntity.ok(new TokenDTO(token));
     }
 }
