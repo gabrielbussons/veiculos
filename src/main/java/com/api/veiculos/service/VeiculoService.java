@@ -2,12 +2,14 @@ package com.api.veiculos.service;
 
 import com.api.veiculos.exception.PlacaDuplicadaException;
 import com.api.veiculos.infrastructure.dto.RelatorioMarcaDTO;
+import com.api.veiculos.infrastructure.dto.VeiculoDTO;
 import com.api.veiculos.infrastructure.entity.Veiculo;
 import com.api.veiculos.infrastructure.repository.VeiculoRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -17,22 +19,26 @@ public class VeiculoService {
 
     private final VeiculoRepository repository;
     private final CotacaoDolarService cotacaoDolarService;
+    private final ObjectMapper objectMapper;
 
 
-    public VeiculoService(VeiculoRepository repository, CotacaoDolarService cotacaoDolarService) {
+    public VeiculoService(VeiculoRepository repository, CotacaoDolarService cotacaoDolarService, ObjectMapper objectMapper) {
         this.repository = repository;
         this.cotacaoDolarService = cotacaoDolarService;
+        this.objectMapper = objectMapper;
     }
 
-    public List<Veiculo> buscarVeiculos(String marca, Integer ano, String cor, Double minPreco, Double maxPreco, String campoOrdenacao, String direcaoOrdenacao, int pagina, int tamanho) {
+    public List<VeiculoDTO> buscarVeiculos(String marca, Integer ano, String cor, Double minPreco, Double maxPreco, String campoOrdenacao, String direcaoOrdenacao, int pagina, int tamanho) {
         Sort ordenacao = criarOrdenacao(campoOrdenacao, direcaoOrdenacao);
         Pageable paginacao = PageRequest.of(pagina, tamanho, ordenacao);
 
-        return repository.buscarFiltrados(marca, ano, cor, minPreco, maxPreco, paginacao);
+        List<Veiculo> veiculos = repository.buscarFiltrados(marca, ano, cor, minPreco, maxPreco, paginacao);
+        return veiculos.stream().map(this::converterParaVeiculoDto).toList();
     }
 
-    public Veiculo buscarPorId(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Veículo não encontrado"));
+    public VeiculoDTO buscarVeiculoPorId(Long id) {
+        Veiculo veiculo = obterVeiculoPorId(id);
+        return converterParaVeiculoDto(veiculo);
     }
 
     public void salvarVeiculo(Veiculo veiculo) {
@@ -47,7 +53,7 @@ public class VeiculoService {
     }
 
     public void atualizarVeiculo(Long id, Veiculo dados) {
-        Veiculo veiculoEntity = buscarPorId(id);
+        Veiculo veiculoEntity = obterVeiculoPorId(id);
 
         validarPlacaDuplicada(dados.getPlaca(), id);
 
@@ -65,7 +71,7 @@ public class VeiculoService {
     }
 
     public void atualizarVeiculoParcialmente(Long id, Map<String, Object> campos) {
-        Veiculo veiculo = buscarPorId(id);
+        Veiculo veiculo = obterVeiculoPorId(id);
 
         campos.forEach((campo, valor) -> {
             switch (campo) {
@@ -88,7 +94,7 @@ public class VeiculoService {
     }
 
     public void deletarVeiculo(Long id) {
-        Veiculo veiculo = buscarPorId(id);
+        Veiculo veiculo = obterVeiculoPorId(id);
 
         veiculo.setAtivo(false);
         repository.saveAndFlush(veiculo);
@@ -96,6 +102,10 @@ public class VeiculoService {
 
     public List<RelatorioMarcaDTO> relatorioVeiculoPorMarca() {
         return repository.relatorioPorMarca();
+    }
+
+    private Veiculo obterVeiculoPorId(Long id) {
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Veículo não encontrado"));
     }
 
     private void validarPlacaDuplicada(String placa, Long idAtual) {
@@ -117,5 +127,9 @@ public class VeiculoService {
                         Sort.Order.desc(campoOrdenacao) :
                         Sort.Order.asc(campoOrdenacao)
         );
+    }
+
+    private VeiculoDTO converterParaVeiculoDto(Veiculo veiculo) {
+        return objectMapper.convertValue(veiculo, VeiculoDTO.class);
     }
 }

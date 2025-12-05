@@ -1,6 +1,7 @@
 package com.api.veiculos.controller;
 
 import com.api.veiculos.infrastructure.dto.RelatorioMarcaDTO;
+import com.api.veiculos.infrastructure.dto.VeiculoDTO;
 import com.api.veiculos.infrastructure.entity.Veiculo;
 import com.api.veiculos.service.VeiculoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +36,7 @@ public class VeiculoController {
                     @ApiResponse(responseCode = "401", description = "Não autorizado")
             }
     )
-    public ResponseEntity<List<Veiculo>> buscarVeiculos(
+    public ResponseEntity<List<VeiculoDTO>> buscarVeiculos(
             @Parameter(description = "Marca do veículo") @RequestParam(required = false) String marca,
             @Parameter(description = "Ano do veículo") @RequestParam(required = false) Integer ano,
             @Parameter(description = "Cor do veículo") @RequestParam(required = false) String cor,
@@ -47,7 +48,7 @@ public class VeiculoController {
             @Parameter(description = "Número de registros retornados") @RequestParam(defaultValue = "10") int tamanho
     ) {
 
-        List<Veiculo> veiculos = veiculoService.buscarVeiculos(marca, ano, cor, minPreco, maxPreco, campoOrdenacao, direcaoOrdenacao, pagina, tamanho);
+        List<VeiculoDTO> veiculos = veiculoService.buscarVeiculos(marca, ano, cor, minPreco, maxPreco, campoOrdenacao, direcaoOrdenacao, pagina, tamanho);
         return ResponseEntity.ok(veiculos);
     }
 
@@ -61,8 +62,8 @@ public class VeiculoController {
                     @ApiResponse(responseCode = "401", description = "Não autorizado")
             }
     )
-    public ResponseEntity<Veiculo> buscarVeiculoPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(veiculoService.buscarPorId(id));
+    public ResponseEntity<VeiculoDTO> buscarVeiculoPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(veiculoService.buscarVeiculoPorId(id));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
