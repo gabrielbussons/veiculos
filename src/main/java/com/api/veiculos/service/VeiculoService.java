@@ -3,6 +3,8 @@ package com.api.veiculos.service;
 import com.api.veiculos.infrastructure.dto.RelatorioMarcaDTO;
 import com.api.veiculos.infrastructure.entity.Veiculo;
 import com.api.veiculos.infrastructure.repository.VeiculoRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +23,11 @@ public class VeiculoService {
         this.cotacaoDolarService = cotacaoDolarService;
     }
 
-    public List<Veiculo> buscarVeiculos(String marca, Integer ano, String cor, Double minPreco, Double maxPreco, String campoOrdenacao, String direcaoOrdenacao) {
+    public List<Veiculo> buscarVeiculos(String marca, Integer ano, String cor, Double minPreco, Double maxPreco, String campoOrdenacao, String direcaoOrdenacao, int pagina, int tamanho) {
         Sort ordenacao = criarOrdenacao(campoOrdenacao, direcaoOrdenacao);
+        Pageable paginacao = PageRequest.of(pagina, tamanho, ordenacao);
 
-        return repository.buscarFiltrados(marca, ano, cor, minPreco, maxPreco, ordenacao);
+        return repository.buscarFiltrados(marca, ano, cor, minPreco, maxPreco, paginacao);
     }
 
     public Veiculo buscarPorId(Long id) {

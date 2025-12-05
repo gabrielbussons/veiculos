@@ -42,10 +42,12 @@ public class VeiculoController {
             @Parameter(description = "Preço mínimo") @RequestParam(required = false) Double minPreco,
             @Parameter(description = "Preço máximo") @RequestParam(required = false) Double maxPreco,
             @Parameter(description = "Campo para ordenar", example = "preco") @RequestParam(defaultValue = "id") String campoOrdenacao,
-            @Parameter(description = "Direção da ordenação", example = "asc") @RequestParam(defaultValue = "asc") String direcaoOrdenacao
+            @Parameter(description = "Direção da ordenação", example = "asc") @RequestParam(defaultValue = "asc") String direcaoOrdenacao,
+            @Parameter(description = "Pagina") @RequestParam(defaultValue = "0") int pagina,
+            @Parameter(description = "Número de registros retornados") @RequestParam(defaultValue = "10") int tamanho
     ) {
 
-        List<Veiculo> veiculos = veiculoService.buscarVeiculos(marca, ano, cor, minPreco, maxPreco, campoOrdenacao, direcaoOrdenacao);
+        List<Veiculo> veiculos = veiculoService.buscarVeiculos(marca, ano, cor, minPreco, maxPreco, campoOrdenacao, direcaoOrdenacao, pagina, tamanho);
         return ResponseEntity.ok(veiculos);
     }
 
