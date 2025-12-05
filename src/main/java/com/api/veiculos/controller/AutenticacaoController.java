@@ -3,12 +3,13 @@ package com.api.veiculos.controller;
 import com.api.veiculos.infrastructure.dto.LoginDTO;
 import com.api.veiculos.infrastructure.dto.TokenDTO;
 import com.api.veiculos.service.JwtService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Autenticação", description = "API para autenticação de usuários")
 public class AutenticacaoController {
 
     @Autowired
@@ -25,32 +27,25 @@ public class AutenticacaoController {
     private JwtService jwtService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
-
-        System.out.println("### LOGIN RECEBIDO:");
-        System.out.println("Username: " + dto.getUsername());
-        System.out.println("Senha: " + dto.getSenha());
-        System.out.println("### Chamando AuthenticationManager...");
-
+    @Operation(
+            summary = "Login do usuário",
+            description = "Recebe username e senha e retorna token JWT",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Login bem-sucedido"),
+                    @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+            }
+    )
+    public ResponseEntity<TokenDTO> login(@RequestBody LoginDTO dto) {
         try {
-
-            PasswordEncoder encoder = new BCryptPasswordEncoder();
-            System.out.println(encoder.matches("123456", "$2a$10$E1lefQTXFLTOQ/7rCQr0iO00FiETVafGJ6JtktGBhlux0GA2CrKk."));
-
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getSenha());
 
             authManager.authenticate(authToken);
 
-            System.out.println("### LOGIN OK!");
-
             String token = jwtService.gerarToken(dto.getUsername());
             return ResponseEntity.ok(new TokenDTO(token));
-
         } catch (Exception e) {
-            System.out.println("### ERRO NO LOGIN:");
-            e.printStackTrace();
-            return ResponseEntity.status(401).body("Credenciais inválidas");
+            return ResponseEntity.status(401).body(null);
         }
     }
 }
