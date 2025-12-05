@@ -4,6 +4,7 @@ import com.api.veiculos.infrastructure.dto.RelatorioMarcaDTO;
 import com.api.veiculos.infrastructure.entity.Veiculo;
 import com.api.veiculos.service.VeiculoService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +36,16 @@ public class VeiculoController {
             }
     )
     public ResponseEntity<List<Veiculo>> buscarVeiculos(
-            @RequestParam(required = false) String marca,
-            @RequestParam(required = false) Integer ano,
-            @RequestParam(required = false) String cor,
-            @RequestParam(required = false) Double minPreco,
-            @RequestParam(required = false) Double maxPreco) {
+            @Parameter(description = "Marca do veículo") @RequestParam(required = false) String marca,
+            @Parameter(description = "Ano do veículo") @RequestParam(required = false) Integer ano,
+            @Parameter(description = "Cor do veículo") @RequestParam(required = false) String cor,
+            @Parameter(description = "Preço mínimo") @RequestParam(required = false) Double minPreco,
+            @Parameter(description = "Preço máximo") @RequestParam(required = false) Double maxPreco,
+            @Parameter(description = "Campo para ordenar", example = "preco") @RequestParam(defaultValue = "id") String campoOrdenacao,
+            @Parameter(description = "Direção da ordenação", example = "asc") @RequestParam(defaultValue = "asc") String direcaoOrdenacao
+    ) {
 
-        List<Veiculo> veiculos = veiculoService.buscarVeiculos(marca, ano, cor, minPreco, maxPreco);
+        List<Veiculo> veiculos = veiculoService.buscarVeiculos(marca, ano, cor, minPreco, maxPreco, campoOrdenacao, direcaoOrdenacao);
         return ResponseEntity.ok(veiculos);
     }
 

@@ -4,6 +4,7 @@ import com.api.veiculos.infrastructure.dto.RelatorioMarcaDTO;
 import com.api.veiculos.infrastructure.entity.Veiculo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,7 @@ public interface VeiculoRepository extends JpaRepository<Veiculo, Long> {
                   AND (:maxPreco IS NULL OR v.preco <= :maxPreco)
                   AND v.ativo = TRUE
             """)
-    List<Veiculo> buscarFiltrados(String marca, Integer ano, String cor, Double minPreco, Double maxPreco);
+    List<Veiculo> buscarFiltrados(String marca, Integer ano, String cor, Double minPreco, Double maxPreco, Sort sort);
 
     @Query("""
                 SELECT new com.api.veiculos.infrastructure.dto.RelatorioMarcaDTO(

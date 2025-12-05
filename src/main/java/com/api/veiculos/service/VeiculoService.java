@@ -3,6 +3,7 @@ package com.api.veiculos.service;
 import com.api.veiculos.infrastructure.dto.RelatorioMarcaDTO;
 import com.api.veiculos.infrastructure.entity.Veiculo;
 import com.api.veiculos.infrastructure.repository.VeiculoRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,13 +21,10 @@ public class VeiculoService {
         this.cotacaoDolarService = cotacaoDolarService;
     }
 
-    public List<Veiculo> buscarVeiculos(String marca, Integer ano, String cor, Double minPreco, Double maxPreco) {
+    public List<Veiculo> buscarVeiculos(String marca, Integer ano, String cor, Double minPreco, Double maxPreco, String campoOrdenacao, String direcaoOrdenacao) {
+        Sort ordenacao = criarOrdenacao(campoOrdenacao, direcaoOrdenacao);
 
-        if (nenhumFiltroInformado(marca, ano, cor, minPreco, maxPreco)) {
-            return repository.findAll();
-        }
-
-        return repository.buscarFiltrados(marca, ano, cor, minPreco, maxPreco);
+        return repository.buscarFiltrados(marca, ano, cor, minPreco, maxPreco, ordenacao);
     }
 
     public Veiculo buscarPorId(Long id) {
@@ -96,10 +94,6 @@ public class VeiculoService {
         return repository.relatorioPorMarca();
     }
 
-    private boolean nenhumFiltroInformado(String marca, Integer ano, String cor, Double minPreco, Double maxPreco) {
-        return marca == null && ano == null && cor == null && minPreco == null && maxPreco == null;
-    }
-
     private void validarPlacaDuplicada(String placa, Long idAtual) {
         var existente = repository.findByPlaca(placa);
 
@@ -111,5 +105,13 @@ public class VeiculoService {
     private Double obterValorDolar(Double valorReal) {
         Double cotacao = cotacaoDolarService.buscarCotacaoAtual();
         return valorReal / cotacao;
+    }
+
+    private Sort criarOrdenacao(String campoOrdenacao, String direcaoOrdenacao) {
+        return Sort.by(
+                direcaoOrdenacao.equalsIgnoreCase("desc") ?
+                        Sort.Order.desc(campoOrdenacao) :
+                        Sort.Order.asc(campoOrdenacao)
+        );
     }
 }
