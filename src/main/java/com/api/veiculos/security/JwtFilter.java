@@ -30,9 +30,6 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-
-        System.out.println("JwtFilter: " + request.getRequestURI());
-
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -47,7 +44,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
             UserDetails user = userDetailsService.loadUserByUsername(username);
 
-            // Valida token
             if (jwtService.validarToken(token, user)) {
 
                 UsernamePasswordAuthenticationToken authToken =
