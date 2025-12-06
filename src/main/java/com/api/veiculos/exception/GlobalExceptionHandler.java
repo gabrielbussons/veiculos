@@ -52,4 +52,10 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), req);
     }
 
+    @ExceptionHandler(CampoObrigatorioException.class)
+    public ResponseEntity<ApiError> handleCampoObrigatorio(
+            CampoObrigatorioException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req);
+    }
+
 }

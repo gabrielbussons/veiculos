@@ -2,7 +2,7 @@ package com.api.veiculos.controller;
 
 import com.api.veiculos.infrastructure.dto.RelatorioMarcaDTO;
 import com.api.veiculos.infrastructure.dto.VeiculoDTO;
-import com.api.veiculos.infrastructure.entity.Veiculo;
+import com.api.veiculos.infrastructure.dto.VeiculoRequestDTO;
 import com.api.veiculos.service.VeiculoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -77,7 +77,7 @@ public class VeiculoController {
                     @ApiResponse(responseCode = "403", description = "Acesso negado")
             }
     )
-    public ResponseEntity<Void> salvarVeiculo(@RequestBody Veiculo veiculo) {
+    public ResponseEntity<Void> salvarVeiculo(@RequestBody VeiculoRequestDTO veiculo) {
         veiculoService.salvarVeiculo(veiculo);
         return ResponseEntity.ok().build();
     }
@@ -94,7 +94,7 @@ public class VeiculoController {
                     @ApiResponse(responseCode = "403", description = "Acesso negado")
             }
     )
-    public ResponseEntity<Void> atualizarVeiculo(@PathVariable Long id, @RequestBody Veiculo veiculo) {
+    public ResponseEntity<Void> atualizarVeiculo(@PathVariable Long id, @RequestBody VeiculoRequestDTO veiculo) {
         veiculoService.atualizarVeiculo(id, veiculo);
         return ResponseEntity.ok().build();
     }

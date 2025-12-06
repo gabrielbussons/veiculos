@@ -1,8 +1,10 @@
 package com.api.veiculos.service;
 
+import com.api.veiculos.exception.CampoObrigatorioException;
 import com.api.veiculos.exception.PlacaDuplicadaException;
 import com.api.veiculos.infrastructure.dto.RelatorioMarcaDTO;
 import com.api.veiculos.infrastructure.dto.VeiculoDTO;
+import com.api.veiculos.infrastructure.dto.VeiculoRequestDTO;
 import com.api.veiculos.infrastructure.entity.Veiculo;
 import com.api.veiculos.infrastructure.repository.VeiculoRepository;
 import org.springframework.data.domain.PageRequest;
@@ -41,32 +43,27 @@ public class VeiculoService {
         return converterParaVeiculoDto(veiculo);
     }
 
-    public void salvarVeiculo(Veiculo veiculo) {
+    public void salvarVeiculo(VeiculoRequestDTO veiculo) {
         validarPlacaDuplicada(veiculo.getPlaca(), null);
+
+        validarCamposObrigatorios(veiculo);
 
         veiculo.setPreco(obterValorDolar(veiculo.getPreco()));
 
         if (veiculo.getAtivo() == null) {
             veiculo.setAtivo(true);
         }
-        repository.saveAndFlush(veiculo);
+        repository.saveAndFlush(converterParaVeiculoEntity(veiculo));
     }
 
-    public void atualizarVeiculo(Long id, Veiculo dados) {
-        Veiculo veiculoEntity = obterVeiculoPorId(id);
+    public void atualizarVeiculo(Long id, VeiculoRequestDTO veiculo) {
+        repository.findById(id).orElseThrow(() -> new RuntimeException("Veículo não encontrado"));
 
-        validarPlacaDuplicada(dados.getPlaca(), id);
+        validarPlacaDuplicada(veiculo.getPlaca(), id);
 
-        Veiculo atualizado = Veiculo.builder()
-                .id(veiculoEntity.getId())
-                .marca(dados.getMarca() != null ? dados.getMarca() : veiculoEntity.getMarca())
-                .ano(dados.getAno() != null ? dados.getAno() : veiculoEntity.getAno())
-                .cor(dados.getCor() != null ? dados.getCor() : veiculoEntity.getCor())
-                .preco(dados.getPreco() != null ? obterValorDolar(dados.getPreco()) : obterValorDolar(veiculoEntity.getPreco()))
-                .ativo(veiculoEntity.getAtivo())
-                .build();
+        validarCamposObrigatorios(veiculo);
 
-        repository.saveAndFlush(atualizado);
+        repository.saveAndFlush(converterParaVeiculoEntity(veiculo));
     }
 
     public void atualizarVeiculoParcialmente(Long id, Map<String, Object> campos) {
@@ -129,5 +126,30 @@ public class VeiculoService {
 
     private VeiculoDTO converterParaVeiculoDto(Veiculo veiculo) {
         return objectMapper.convertValue(veiculo, VeiculoDTO.class);
+    }
+
+    private Veiculo converterParaVeiculoEntity(VeiculoRequestDTO dto) {
+        return objectMapper.convertValue(dto, Veiculo.class);
+    }
+
+    private void validarCamposObrigatorios(VeiculoRequestDTO veiculo) {
+        if (veiculo.getMarca() == null || veiculo.getMarca().isBlank()) {
+            throw new CampoObrigatorioException("marca");
+        }
+        if (veiculo.getAno() == null) {
+            throw new CampoObrigatorioException("ano");
+        }
+        if (veiculo.getPlaca() == null || veiculo.getPlaca().isBlank()) {
+            throw new CampoObrigatorioException("placa");
+        }
+        if (veiculo.getCor() == null || veiculo.getCor().isBlank()) {
+            throw new CampoObrigatorioException("cor");
+        }
+        if (veiculo.getPreco() == null) {
+            throw new CampoObrigatorioException("preco");
+        }
+        if (veiculo.getAtivo() == null) {
+            throw new CampoObrigatorioException("ativo");
+        }
     }
 }

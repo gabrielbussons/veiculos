@@ -1,6 +1,7 @@
 package com.api.veiculos.service;
 
 import com.api.veiculos.infrastructure.dto.VeiculoDTO;
+import com.api.veiculos.infrastructure.dto.VeiculoRequestDTO;
 import com.api.veiculos.infrastructure.entity.Veiculo;
 import com.api.veiculos.infrastructure.repository.VeiculoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,18 +33,28 @@ class VeiculoServiceTest {
     void deveLancarExcecaoQuandoPlacaDuplicada() {
         Veiculo existente = Veiculo.builder()
                 .id(1L)
-                .placa("ABC1234")
+                .marca("Ford")
+                .ano(2020)
+                .cor("Preto")
+                .placa("BBB-2222")
+                .ativo(true)
+                .preco(110000.0)
                 .build();
 
-        when(repository.findByPlaca("ABC1234"))
+        when(repository.findByPlaca("BBB-2222"))
                 .thenReturn(Optional.of(existente));
 
-        Veiculo novo = Veiculo.builder()
-                .placa("ABC1234")
+        VeiculoRequestDTO veiculoNovo = VeiculoRequestDTO.builder()
+                .marca("Ford")
+                .ano(2020)
+                .cor("Preto")
+                .placa("BBB-2222")
+                .ativo(true)
+                .preco(110000.0)
                 .build();
 
         RuntimeException ex = assertThrows(RuntimeException.class, () ->
-                service.salvarVeiculo(novo)
+                service.salvarVeiculo(veiculoNovo)
         );
 
         assertEquals("Já existe um veículo cadastrado com esta placa", ex.getMessage());
@@ -56,20 +67,41 @@ class VeiculoServiceTest {
 
         when(cotacaoDolarService.buscarCotacaoAtual()).thenReturn(5.0);
 
-        Veiculo novo = Veiculo.builder()
-                .placa("XYZ9999")
-                .preco(100.0)
+        VeiculoRequestDTO veiculoNovo = VeiculoRequestDTO.builder()
+                .marca("Ford")
+                .ano(2020)
+                .cor("Preto")
+                .placa("BBB-2222")
+                .ativo(true)
+                .preco(110000.0)
                 .build();
 
-        service.salvarVeiculo(novo);
+        service.salvarVeiculo(veiculoNovo);
 
         verify(repository, times(1)).saveAndFlush(any(Veiculo.class));
     }
 
     @Test
     void deveAplicarFiltrosCombinados() {
-        Veiculo v1 = Veiculo.builder().id(1L).marca("Ford").cor("Preto").build();
-        Veiculo v2 = Veiculo.builder().id(2L).marca("Ford").cor("Preto").build();
+        Veiculo v1 = Veiculo.builder()
+                .id(1L)
+                .marca("Ford")
+                .ano(2020)
+                .cor("Preto")
+                .placa("BBB-2222")
+                .ativo(true)
+                .preco(110000.0)
+                .build();
+
+        Veiculo v2 = Veiculo.builder()
+                .id(2L)
+                .marca("Ford")
+                .ano(2020)
+                .cor("Preto")
+                .placa("BBB-2223")
+                .ativo(true)
+                .preco(110000.0)
+                .build();
 
         when(repository.buscarFiltrados(
                 eq("Ford"),
@@ -110,7 +142,7 @@ class VeiculoServiceTest {
     void deveFalharAoAtualizarVeiculoInexistente() {
         when(repository.findById(99L)).thenReturn(Optional.empty());
 
-        Veiculo veiculoAtualizar = Veiculo.builder()
+        VeiculoRequestDTO veiculoAtualizar = VeiculoRequestDTO.builder()
                 .marca("Fiat")
                 .build();
 
