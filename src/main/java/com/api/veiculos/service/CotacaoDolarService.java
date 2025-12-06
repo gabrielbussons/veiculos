@@ -1,5 +1,6 @@
 package com.api.veiculos.service;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -10,6 +11,7 @@ public class CotacaoDolarService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Cacheable(value = "cotacaoDolar", key = "#root.methodName", unless = "#result == null")
     public double buscarCotacaoAtual() {
         try {
             return consultarAwesomeAPI();

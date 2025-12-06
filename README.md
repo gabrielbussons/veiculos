@@ -5,6 +5,7 @@ O projeto utiliza as seguintes tecnologias e dependências:
 - **H2 Database** (em memória)
 - **Maven**
 - **Jdk17**
+- **Redis**
 
 
 Detalhes da configuração do banco de dados H2:
@@ -15,6 +16,14 @@ Usuário: sa
 sem senha
 
 Porta do servidor: 8081
+
+
+Rodando o Redis com Docker
+Para executar o Redis localmente, basta rodar:
+docker run --name redis -p 6379:6379 -d redis
+O Redis ficará disponível em localhost:6379 e a aplicação já está configurada para se conectar automaticamente.
+Certifique-se de ter o Docker instalado e em execução na sua máquina.
+OBS: O Redis é utilizado para cache do valor atual do Dolar, melhorando a performance da aplicação. A cada 1 minuto, o valor é atualizado a partir de uma API externa.
 
 Para cadastro de usuários iniciais, utilize os seguintes comandos SQL no console do H2:
 
