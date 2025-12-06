@@ -19,9 +19,6 @@ public class Veiculo {
     @Column(name = "marca", nullable = false)
     private String marca;
 
-    @Column(name = "modelo", nullable = false)
-    private String modelo;
-
     @Column(name = "placa", unique = true, nullable = false)
     private String placa;
 

@@ -69,7 +69,6 @@ class VeiculoE2ETest {
         // 2️⃣ CRIAR VEÍCULO (ADMIN)
         Veiculo v = Veiculo.builder()
                 .marca("Ford")
-                .modelo("Uno")
                 .ano(2020)
                 .cor("Preto")
                 .placa("CCC-3333")
@@ -100,10 +99,10 @@ class VeiculoE2ETest {
         mockMvc.perform(
                         get("/veiculos")
                                 .header("Authorization", "Bearer " + token)
-                                .param("modelo", "Uno")
+                                .param("marca", "Ford")
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].modelo").value("Uno"));
+                .andExpect(jsonPath("$[0].marca").value("Ford"));
 
 
         // 5️⃣ DETALHAR VEÍCULO POR ID

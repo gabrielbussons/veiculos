@@ -1,9 +1,11 @@
 package com.api.veiculos.service;
 
+import com.api.veiculos.infrastructure.dto.VeiculoDTO;
 import com.api.veiculos.infrastructure.entity.Veiculo;
 import com.api.veiculos.infrastructure.repository.VeiculoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +25,7 @@ class VeiculoServiceTest {
         repository = mock(VeiculoRepository.class);
         cotacaoDolarService = mock(CotacaoDolarService.class);
 
-        service = new VeiculoService(repository, cotacaoDolarService);
+        service = new VeiculoService(repository, cotacaoDolarService, new ObjectMapper());
     }
 
     @Test
@@ -78,7 +80,7 @@ class VeiculoServiceTest {
                 any()
         )).thenReturn(List.of(v1, v2));
 
-        List<Veiculo> resultado = service.buscarVeiculos(
+        List<VeiculoDTO> resultado = service.buscarVeiculos(
                 "Ford",
                 2020,
                 "Preto",
@@ -110,7 +112,6 @@ class VeiculoServiceTest {
 
         Veiculo veiculoAtualizar = Veiculo.builder()
                 .marca("Fiat")
-                .modelo("Uno")
                 .build();
 
         RuntimeException ex = assertThrows(RuntimeException.class, () ->

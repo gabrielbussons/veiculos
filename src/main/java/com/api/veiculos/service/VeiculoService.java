@@ -60,7 +60,6 @@ public class VeiculoService {
         Veiculo atualizado = Veiculo.builder()
                 .id(veiculoEntity.getId())
                 .marca(dados.getMarca() != null ? dados.getMarca() : veiculoEntity.getMarca())
-                .modelo(dados.getModelo() != null ? dados.getModelo() : veiculoEntity.getModelo())
                 .ano(dados.getAno() != null ? dados.getAno() : veiculoEntity.getAno())
                 .cor(dados.getCor() != null ? dados.getCor() : veiculoEntity.getCor())
                 .preco(dados.getPreco() != null ? obterValorDolar(dados.getPreco()) : obterValorDolar(veiculoEntity.getPreco()))
@@ -76,7 +75,6 @@ public class VeiculoService {
         campos.forEach((campo, valor) -> {
             switch (campo) {
                 case "marca" -> veiculo.setMarca((String) valor);
-                case "modelo" -> veiculo.setModelo((String) valor);
                 case "ano" -> veiculo.setAno((Integer) valor);
                 case "cor" -> veiculo.setCor((String) valor);
                 case "preco" -> veiculo.setPreco(obterValorDolar(Double.valueOf(valor.toString())));
