@@ -4,6 +4,7 @@ O projeto utiliza as seguintes tecnologias e dependências:
 - **Spring Security** (para autenticação e autorização)
 - **H2 Database** (em memória)
 - **Maven**
+- **Jdk17**
 
 
 Detalhes da configuração do banco de dados H2:
@@ -23,3 +24,5 @@ INSERT INTO usuario (username, senha, perfil, ativo) VALUES ('user', '$2a$10$E1l
 
 
 Além disso, o projeto conta com testes de service, repository e e2e.
+
+Documentação da API disponível em /swagger-ui.html após iniciar a aplicação.
